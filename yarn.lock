@@ -48,7 +48,7 @@
   resolved "https://registry.npm.taobao.org/@fortawesome/fontawesome-free/download/@fortawesome/fontawesome-free-5.13.0.tgz#fcb113d1aca4b471b709e8c9c168674fbd6e06d9"
   integrity sha1-/LET0ayktHG3CejJwWhnT71uBtk=
 
-"@jupyterlab/application@^2.0.0":
+"@jupyterlab/application@^2.0.2":
   version "2.0.2"
   resolved "https://registry.npm.taobao.org/@jupyterlab/application/download/@jupyterlab/application-2.0.2.tgz#393965798c4e04f522f9aa6a9b02b883a35a6634"
   integrity sha1-OTlleYxOBPUi+apqmwK4g6NaZjQ=
@@ -97,6 +97,44 @@
     react "~16.9.0"
     react-dom "~16.9.0"
     sanitize-html "~1.20.1"
+
+"@jupyterlab/attachments@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/attachments/download/@jupyterlab/attachments-2.0.2.tgz#6963771c11a19a67b164f11834faef2f856c8322"
+  integrity sha1-aWN3HBGhmmexZPEYNPrvL4VsgyI=
+  dependencies:
+    "@jupyterlab/nbformat" "^2.0.1"
+    "@jupyterlab/observables" "^3.0.1"
+    "@jupyterlab/rendermime" "^2.0.2"
+    "@jupyterlab/rendermime-interfaces" "^2.0.1"
+    "@lumino/disposable" "^1.3.5"
+    "@lumino/signaling" "^1.3.5"
+
+"@jupyterlab/cells@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/cells/download/@jupyterlab/cells-2.0.2.tgz#1346d47e5943ee8df5052e945d55464f217ac737"
+  integrity sha1-E0bUfllD7o31BS6UXVVGTyF6xzc=
+  dependencies:
+    "@jupyterlab/apputils" "^2.0.2"
+    "@jupyterlab/attachments" "^2.0.2"
+    "@jupyterlab/codeeditor" "^2.0.2"
+    "@jupyterlab/codemirror" "^2.0.2"
+    "@jupyterlab/coreutils" "^4.0.2"
+    "@jupyterlab/filebrowser" "^2.0.2"
+    "@jupyterlab/nbformat" "^2.0.1"
+    "@jupyterlab/observables" "^3.0.1"
+    "@jupyterlab/outputarea" "^2.0.2"
+    "@jupyterlab/rendermime" "^2.0.2"
+    "@jupyterlab/services" "^5.0.2"
+    "@jupyterlab/ui-components" "^2.0.2"
+    "@lumino/algorithm" "^1.2.3"
+    "@lumino/coreutils" "^1.4.2"
+    "@lumino/dragdrop" "^1.5.1"
+    "@lumino/messaging" "^1.3.3"
+    "@lumino/signaling" "^1.3.5"
+    "@lumino/virtualdom" "^1.6.1"
+    "@lumino/widgets" "^1.11.1"
+    react "~16.9.0"
 
 "@jupyterlab/codeeditor@^2.0.2":
   version "2.0.2"
@@ -148,6 +186,25 @@
     path-posix "~1.0.0"
     url-parse "~1.4.7"
 
+"@jupyterlab/docmanager@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/docmanager/download/@jupyterlab/docmanager-2.0.2.tgz#6eb6a0f1134a8b8717c4264e8f5166b3f3937140"
+  integrity sha1-brag8RNKi4cXxCZOj1Fms/OTcUA=
+  dependencies:
+    "@jupyterlab/apputils" "^2.0.2"
+    "@jupyterlab/coreutils" "^4.0.2"
+    "@jupyterlab/docregistry" "^2.0.2"
+    "@jupyterlab/services" "^5.0.2"
+    "@jupyterlab/statusbar" "^2.0.2"
+    "@lumino/algorithm" "^1.2.3"
+    "@lumino/coreutils" "^1.4.2"
+    "@lumino/disposable" "^1.3.5"
+    "@lumino/messaging" "^1.3.3"
+    "@lumino/properties" "^1.1.6"
+    "@lumino/signaling" "^1.3.5"
+    "@lumino/widgets" "^1.11.1"
+    react "~16.9.0"
+
 "@jupyterlab/docregistry@^2.0.2":
   version "2.0.2"
   resolved "https://registry.npm.taobao.org/@jupyterlab/docregistry/download/@jupyterlab/docregistry-2.0.2.tgz#45ee6be76aae72e9df0a1a1bc69effaae401235b"
@@ -169,12 +226,63 @@
     "@lumino/signaling" "^1.3.5"
     "@lumino/widgets" "^1.11.1"
 
+"@jupyterlab/filebrowser@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/filebrowser/download/@jupyterlab/filebrowser-2.0.2.tgz#7e19e9bfb409ec6b2242f441351ae3f6315dd13e"
+  integrity sha1-fhnpv7QJ7GsiQvRBNRrj9jFd0T4=
+  dependencies:
+    "@jupyterlab/apputils" "^2.0.2"
+    "@jupyterlab/coreutils" "^4.0.2"
+    "@jupyterlab/docmanager" "^2.0.2"
+    "@jupyterlab/docregistry" "^2.0.2"
+    "@jupyterlab/services" "^5.0.2"
+    "@jupyterlab/statedb" "^2.0.1"
+    "@jupyterlab/statusbar" "^2.0.2"
+    "@jupyterlab/ui-components" "^2.0.2"
+    "@lumino/algorithm" "^1.2.3"
+    "@lumino/coreutils" "^1.4.2"
+    "@lumino/disposable" "^1.3.5"
+    "@lumino/domutils" "^1.1.7"
+    "@lumino/dragdrop" "^1.5.1"
+    "@lumino/messaging" "^1.3.3"
+    "@lumino/polling" "^1.0.4"
+    "@lumino/signaling" "^1.3.5"
+    "@lumino/widgets" "^1.11.1"
+    react "~16.9.0"
+
 "@jupyterlab/nbformat@^2.0.1":
   version "2.0.1"
   resolved "https://registry.npm.taobao.org/@jupyterlab/nbformat/download/@jupyterlab/nbformat-2.0.1.tgz#2af01e20755632f5fb8530942c470e0f31f34df4"
   integrity sha1-KvAeIHVWMvX7hTCULEcODzHzTfQ=
   dependencies:
     "@lumino/coreutils" "^1.4.2"
+
+"@jupyterlab/notebook@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/notebook/download/@jupyterlab/notebook-2.0.2.tgz#e51360c799eaf9bb22e5522136fda21563785cde"
+  integrity sha1-5RNgx5nq+bsi5VIhNv2iFWN4XN4=
+  dependencies:
+    "@jupyterlab/apputils" "^2.0.2"
+    "@jupyterlab/cells" "^2.0.2"
+    "@jupyterlab/codeeditor" "^2.0.2"
+    "@jupyterlab/coreutils" "^4.0.2"
+    "@jupyterlab/docregistry" "^2.0.2"
+    "@jupyterlab/nbformat" "^2.0.1"
+    "@jupyterlab/observables" "^3.0.1"
+    "@jupyterlab/rendermime" "^2.0.2"
+    "@jupyterlab/services" "^5.0.2"
+    "@jupyterlab/statusbar" "^2.0.2"
+    "@jupyterlab/ui-components" "^2.0.2"
+    "@lumino/algorithm" "^1.2.3"
+    "@lumino/coreutils" "^1.4.2"
+    "@lumino/domutils" "^1.1.7"
+    "@lumino/dragdrop" "^1.5.1"
+    "@lumino/messaging" "^1.3.3"
+    "@lumino/properties" "^1.1.6"
+    "@lumino/signaling" "^1.3.5"
+    "@lumino/virtualdom" "^1.6.1"
+    "@lumino/widgets" "^1.11.1"
+    react "~16.9.0"
 
 "@jupyterlab/observables@^3.0.1":
   version "3.0.1"
@@ -186,6 +294,25 @@
     "@lumino/disposable" "^1.3.5"
     "@lumino/messaging" "^1.3.3"
     "@lumino/signaling" "^1.3.5"
+
+"@jupyterlab/outputarea@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npm.taobao.org/@jupyterlab/outputarea/download/@jupyterlab/outputarea-2.0.2.tgz#2cfd9c1ae6d159400816f0756cfcc328564115d9"
+  integrity sha1-LP2cGubRWUAIFvB1bPzDKFZBFdk=
+  dependencies:
+    "@jupyterlab/apputils" "^2.0.2"
+    "@jupyterlab/nbformat" "^2.0.1"
+    "@jupyterlab/observables" "^3.0.1"
+    "@jupyterlab/rendermime" "^2.0.2"
+    "@jupyterlab/rendermime-interfaces" "^2.0.1"
+    "@jupyterlab/services" "^5.0.2"
+    "@lumino/algorithm" "^1.2.3"
+    "@lumino/coreutils" "^1.4.2"
+    "@lumino/disposable" "^1.3.5"
+    "@lumino/messaging" "^1.3.3"
+    "@lumino/properties" "^1.1.6"
+    "@lumino/signaling" "^1.3.5"
+    "@lumino/widgets" "^1.11.1"
 
 "@jupyterlab/rendermime-interfaces@^2.0.1":
   version "2.0.1"
@@ -416,6 +543,11 @@
   version "2.0.1"
   resolved "https://registry.npm.taobao.org/@types/dom4/download/@types/dom4-2.0.1.tgz#506d5781b9bcab81bd9a878b198aec7dee2a6033"
   integrity sha1-UG1Xgbm8q4G9moeLGYrsfe4qYDM=
+
+"@types/lodash@^4.14.149":
+  version "4.14.149"
+  resolved "https://registry.npm.taobao.org/@types/lodash/download/@types/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
+  integrity sha1-E0LWPZSMYGKDj7+WEBL3TU5jhEA=
 
 "@types/prop-types@*":
   version "15.7.3"
@@ -778,6 +910,11 @@ lodash.mergewith@^4.6.1:
   version "4.6.2"
   resolved "https://registry.npm.taobao.org/lodash.mergewith/download/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
   integrity sha1-YXEh+JrFX1kEfHrsHM1mVMZZD1U=
+
+lodash@^4.17.15:
+  version "4.17.15"
+  resolved "https://registry.npm.taobao.org/lodash/download/lodash-4.17.15.tgz#b447f6670a0455bbfeedd11392eff330ea097548"
+  integrity sha1-tEf2ZwoEVbv+7dETku/zMOoJdUg=
 
 loose-envify@^1.0.0, loose-envify@^1.1.0, loose-envify@^1.4.0:
   version "1.4.0"

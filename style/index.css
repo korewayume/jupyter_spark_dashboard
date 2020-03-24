@@ -1,0 +1,23 @@
+.spark-dashboard {
+
+}
+
+.spark-dashboard .application span {
+    margin:2px 4px
+}
+
+.spark-dashboard .jobs {
+    padding-left: 8px;
+}
+
+.spark-dashboard .job span {
+    margin:2px 4px
+}
+
+.spark-dashboard .stages {
+    padding-left: 8px;
+}
+
+.spark-dashboard .stages span {
+    margin:2px 4px
+}
