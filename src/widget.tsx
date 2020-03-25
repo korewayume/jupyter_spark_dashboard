@@ -120,7 +120,8 @@ class SubmissionTime extends React.Component<PropsWithData<ISubmissionTime>, ISu
 
     render() {
         return (
-            this.state.submissionTime > 0? <TimeAgo locale='zh_CN' datetime={new Date(this.state.submissionTime)}/>:<span>未知</span>
+            this.state.submissionTime > 0 ? <TimeAgo locale='zh_CN' datetime={new Date(this.state.submissionTime)} /> :
+                <span>未知</span>
         )
     }
 }
@@ -150,35 +151,48 @@ class Duration extends React.Component<PropsWithData<IDuration>, IDuration> {
     }
 }
 
+interface SparkJobItemState {
+    job: SparkJob,
+    isCollapse: boolean
+}
+
+class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItemState> {
+    constructor(props: PropsWithData<SparkJob>) {
+        super(props);
+        this.state = {job: props.data, isCollapse: true};
+    }
+
+    toggleCollapse() {
+        this.setState({
+            isCollapse: !this.state.isCollapse
+        })
+    }
+
+    render() {
+        return [
+            <tr key={`job-${this.state.job.id}`}>
+                <td className={'collapse'} onClick={this.toggleCollapse.bind(this)} />
+                <td>{this.state.job.id}</td>
+                <td><SparkStatusBar status={this.state.job.status} statusText={this.state.job.status} /></td>
+                <td>{this.state.job.stageSummary}</td>
+                <td><TaskProgressBar data={this.state.job} /></td>
+                <td><SubmissionTime data={this.state.job} /></td>
+                <td><Duration data={this.state.job} /></td>
+            </tr>,
+            this.state.isCollapse ? null : <tr key={`job-${this.state.job.id}-stages`}>
+                <td className={'stage-collapse-offset'} />
+                <td className={'stage-table-td'} colSpan={6}>
+                    <SparkStageTable items={this.state.job.stages} />
+                </td>
+            </tr>
+        ]
+    }
+}
 
 class SparkJobTable extends React.Component<PSWithItems<SparkJob>, PSWithItems<SparkJob>> {
     constructor(props: PSWithItems<SparkJob>) {
         super(props);
         this.state = {items: props.items};
-    }
-
-    componentWillReceiveProps() {
-
-    }
-
-    renderSparkJob(job: SparkJob) {
-        return [
-            <tr key={`job-${job.id}`}>
-                <td className={'collapse'} />
-                <td>{job.id}</td>
-                <td><SparkStatusBar status={job.status} statusText={job.status} /></td>
-                <td>{job.stageSummary}</td>
-                <td><TaskProgressBar data={job} /></td>
-                <td><SubmissionTime data={job} /></td>
-                <td><Duration data={job} /></td>
-            </tr>,
-            <tr key={`job-${job.id}-stages`}>
-                <td className={'stage-collapse-offset'} />
-                <td className={'stage-table-td'} colSpan={6}>
-                    <SparkStageTable items={job.stages} />
-                </td>
-            </tr>
-        ]
     }
 
     render() {
@@ -196,7 +210,7 @@ class SparkJobTable extends React.Component<PSWithItems<SparkJob>, PSWithItems<S
                 </tr>
                 </thead>
                 <tbody>
-                {lodash.map(this.state.items, this.renderSparkJob)}
+                {lodash.map(this.state.items, job => <SparkJobItem data={job}/>)}
                 </tbody>
             </table>
         )
