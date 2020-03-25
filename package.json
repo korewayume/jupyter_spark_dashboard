@@ -38,7 +38,9 @@
     "@jupyterlab/notebook": "^2.0.2",
     "@lumino/widgets": "^1.11.1",
     "@types/lodash": "^4.14.149",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "moment-duration-format": "^2.3.2"
   },
   "devDependencies": {
     "rimraf": "^2.6.1",

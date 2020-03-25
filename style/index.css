@@ -1,23 +1,149 @@
 .spark-dashboard {
-
+    box-sizing: border-box;
+    padding: 20px 30px;
 }
 
-.spark-dashboard .application span {
-    margin:2px 4px
+.spark-dashboard .application {
+    height: 30px;
+    line-height: 30px;
+    font-weight: 700;
+    box-sizing: border-box;
+    background-color: #f57c00;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.spark-dashboard-application-item + .spark-dashboard-application-item {
+    margin-left: 5px;
 }
 
 .spark-dashboard .jobs {
     padding-left: 8px;
 }
 
-.spark-dashboard .job span {
-    margin:2px 4px
-}
-
 .spark-dashboard .stages {
     padding-left: 8px;
 }
 
-.spark-dashboard .stages span {
-    margin:2px 4px
+.spark-task-progress {
+    overflow: hidden;
+    display: block;
+    background: #e7e7e7;
+    width: 100%;
+    height: 20px;
+    padding: 0;
+    text-align: left;
+    position: relative;
+    font-size: 75%;
+    border-radius: 2px;
+    color: white;
 }
+
+.spark-task-progress .task-progress-success {
+    background: #20B520;
+}
+
+.spark-task-progress .task-progress-running {
+    background: #42A5F5;
+}
+
+.spark-task-progress .task-progress-text {
+    text-align: center;
+    width: 100%;
+    position: absolute;
+    z-index: 4;
+    line-height: 20px;
+}
+
+.spark-task-progress span {
+    position: relative;
+    height: 100%;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    transition: width 1s;
+}
+
+.spark-status-bar.INFO {
+    background-color:rgba(117, 57, 0, 0.65);
+}
+
+.spark-status-bar.RUNNING {
+    background-color: #42A5F5;
+}
+
+.spark-status-bar.FAILED {
+    background-color: #DB3636;
+}
+
+.spark-status-bar.COMPLETED, .spark-status-bar.SUCCEEDED, .spark-status-bar.SUCCESS {
+    background-color: #20B520;
+}
+
+.spark-status-bar.PENDING {
+    background-color: #9c27b0;
+}
+
+.spark-status-bar.SKIPPED {
+    background-color: #616161;
+}
+
+.spark-status-bar {
+    box-sizing: border-box;
+    font-size: 75%;
+    padding: 0 8px;
+    color: white;
+    border-radius: 2px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.spark-dashboard table {
+    text-align: center;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.stage-table-td {
+    box-sizing: border-box;
+    border-collapse: collapse;
+    padding: 0 !important;
+}
+
+.spark-dashboard table .width-10 {
+    width: 10%;
+}
+
+.spark-dashboard table .width-15 {
+    width: 15%;
+}
+
+.spark-dashboard table .collapse {
+    width: 10px;
+}
+
+.spark-dashboard table .collapse-offset {
+    background-color: #E7E7E7;
+}
+
+.spark-dashboard table .stage-collapse-offset {
+    background-color: #E7E7E7;
+    border: 1px solid rgba(84, 84, 84, .08);;
+}
+
+.spark-dashboard table thead {
+    background-color: #EBEBEB;
+    text-align: center;
+    font-weight: 700;
+}
+
+.spark-dashboard table thead tr, .spark-dashboard table thead tr {
+    height: 30px;
+}
+
+.spark-dashboard table, .spark-dashboard table thead, .spark-dashboard table tbody, .spark-dashboard table tr, .spark-dashboard table td {
+    border-collapse: collapse;
+}
+

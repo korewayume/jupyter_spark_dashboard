@@ -1,7 +1,8 @@
 import * as React from 'react';
 import lodash from 'lodash';
+import moment from 'moment'
+import 'moment-duration-format'
 import {ISessionContext, ReactWidget, UseSignal} from "@jupyterlab/apputils"
-// import {INotebookTracker} from "@jupyterlab/notebook";
 import {NotebookPanel, Notebook} from "@jupyterlab/notebook";
 import {Cell} from "@jupyterlab/cells";
 import {Kernel, KernelMessage} from "@jupyterlab/services";
@@ -12,9 +13,240 @@ import {Signal} from "@lumino/signaling";
 import {Message} from "@lumino/messaging";
 import {Widget} from "@lumino/widgets/lib/widget";
 
+moment.locale('zh-cn');
+
+interface PropsWithData<T> {
+    data: T
+}
+
+interface PSWithItems<T> {
+    items: T[]
+}
+
+interface ITaskProgressBarData {
+    numSuccess: number;
+    numRunning: number;
+    numTasks: number;
+}
+
+interface ISparkStatusBarData {
+    status: string;
+    statusText: string;
+}
+
 interface ISparkTask {
     id: number;
     status: string;
+}
+
+class TaskProgressBar extends React.Component<PropsWithData<ITaskProgressBarData>, ITaskProgressBarData> {
+    constructor(props: PropsWithData<ITaskProgressBarData>) {
+        super(props);
+        this.state = props.data;
+    }
+
+    get running() {
+        return {width: `${(this.state.numRunning / this.state.numTasks) * 100}%`}
+    }
+
+    get success() {
+        return {width: `${(this.state.numSuccess / this.state.numTasks) * 100}%`}
+    }
+
+    get text() {
+        const success = `${this.state.numSuccess}`;
+        const running = this.state.numRunning > 0 ? ` + ${this.state.numRunning}` : '';
+        return `${success}${running} / ${this.state.numTasks}`
+    }
+
+    render() {
+        return (
+            <div className="spark-task-progress">
+                <div className="task-progress-text">{this.text}</div>
+                <span className="task-progress-success" style={this.success} />
+                <span className="task-progress-running" style={this.running} />
+            </div>
+        )
+    }
+}
+
+class SparkStatusBar extends React.Component<ISparkStatusBarData, ISparkStatusBarData> {
+    constructor(props: ISparkStatusBarData) {
+        super(props);
+        this.state = {
+            status: props.status,
+            statusText: props.statusText
+        };
+    }
+
+    componentWillReceiveProps(nextProps: ISparkStatusBarData) {
+        this.setState({
+            status: nextProps.status,
+            statusText: nextProps.statusText
+        })
+    }
+
+    get className() {
+        return [this.state.status, 'spark-status-bar'].join(' ')
+    }
+
+    render() {
+        return (
+            <div className={this.className}>{this.state.statusText}</div>
+        )
+    }
+}
+
+interface ISubmissionTime {
+    submissionTime: number;
+}
+
+interface IDuration extends ISubmissionTime {
+    completionTime: number;
+}
+
+class SubmissionTime extends React.Component<PropsWithData<ISubmissionTime>, ISubmissionTime> {
+    constructor(props: PropsWithData<ISubmissionTime>) {
+        super(props);
+        this.state = props.data;
+    }
+
+    componentWillReceiveProps(nextProps: PropsWithData<ISubmissionTime>) {
+        this.setState({
+            submissionTime: nextProps.data.submissionTime
+        })
+    }
+
+    render() {
+        return (
+            <span>{this.state.submissionTime > 0 ? moment(this.state.submissionTime).fromNow() : '未知'}</span>
+        )
+    }
+}
+
+class Duration extends React.Component<PropsWithData<IDuration>, IDuration> {
+    constructor(props: PropsWithData<IDuration>) {
+        super(props);
+        this.state = props.data;
+    }
+
+    componentWillReceiveProps(nextProps: PropsWithData<IDuration>) {
+        this.setState({
+            submissionTime: nextProps.data.submissionTime,
+            completionTime: nextProps.data.completionTime
+        })
+    }
+
+    render() {
+        return (
+            <span>
+                {
+                    this.state.completionTime - this.state.submissionTime > 0 ?
+                        (moment.duration(this.state.completionTime - this.state.submissionTime) as any).format("d[d] h[h]:mm[m]:ss[s]") : '未知'
+                }
+            </span>
+        )
+    }
+}
+
+
+class SparkJobTable extends React.Component<PSWithItems<SparkJob>, PSWithItems<SparkJob>> {
+    constructor(props: PSWithItems<SparkJob>) {
+        super(props);
+        this.state = {items: props.items};
+    }
+
+    componentWillReceiveProps() {
+
+    }
+
+    renderSparkJob(job: SparkJob) {
+        return [
+            <tr key={`job-${job.id}`}>
+                <td className={'collapse'} />
+                <td>{job.id}</td>
+                <td><SparkStatusBar status={job.status} statusText={job.status} /></td>
+                <td>{job.stageSummary}</td>
+                <td><TaskProgressBar data={job} /></td>
+                <td><SubmissionTime data={job} /></td>
+                <td><Duration data={job} /></td>
+            </tr>,
+            <tr key={`job-${job.id}-stages`}>
+                <td className={'stage-collapse-offset'} />
+                <td className={'stage-table-td'} colSpan={6}>
+                    <SparkStageTable items={job.stages} />
+                </td>
+            </tr>
+        ]
+    }
+
+    render() {
+        return (
+            <table>
+                <thead>
+                <tr>
+                    <td className={'collapse-offset'} />
+                    <td className={'width-10'}>Job ID</td>
+                    <td className={'width-15'}>Status</td>
+                    <td className={'width-15'}>Stages</td>
+                    <td>Tasks</td>
+                    <td className={'width-15'}>Submission Time</td>
+                    <td className={'width-15'}>Duration</td>
+                </tr>
+                </thead>
+                <tbody>
+                {lodash.map(this.state.items, this.renderSparkJob)}
+                </tbody>
+            </table>
+        )
+    }
+}
+
+class SparkStageTable extends React.Component<PSWithItems<SparkStage>, PSWithItems<SparkStage>> {
+    constructor(props: PSWithItems<SparkStage>) {
+        super(props);
+        this.state = {items: props.items};
+    }
+
+    statusData(stage: SparkStage) {
+        return {
+            text: stage.status,
+            status: stage.status
+        }
+    }
+
+    renderSparkStage(stage: SparkStage) {
+        return (
+            <tr key={`stage-${stage.id}`}>
+                <td><span>{stage.id}</span></td>
+                <td><span>{stage.name.split(' ')[0]}</span></td>
+                <td><SparkStatusBar status={stage.status} statusText={stage.status} /></td>
+                <td><TaskProgressBar data={stage} /></td>
+                <td><SubmissionTime data={stage} /></td>
+                <td><Duration data={stage} /></td>
+            </tr>
+        )
+    }
+
+    render() {
+        return (
+            <table>
+                <thead>
+                <tr>
+                    <td className={'width-10'}>Stage ID</td>
+                    <td className={'width-15'}>Stage Name</td>
+                    <td className={'width-15'}>Status</td>
+                    <td>Progress</td>
+                    <td className={'width-15'}>Submission Time</td>
+                    <td className={'width-15'}>Duration</td>
+                </tr>
+                </thead>
+                <tbody>
+                {lodash.map(this.state.items, this.renderSparkStage.bind(this))}
+                </tbody>
+            </table>
+        )
+    }
 }
 
 class SparkStage {
@@ -23,6 +255,8 @@ class SparkStage {
     name: string;
     tasks: Array<ISparkTask>;
     status: string;
+    submissionTime: number;
+    completionTime: number;
 
     constructor(options: any) {
         this.id = options.id;
@@ -30,6 +264,8 @@ class SparkStage {
         this.name = options.name;
         this.tasks = [];
         this.status = options.status || "PENDING";
+        this.submissionTime = options.submissionTime > 0 ? options.submissionTime : -1;
+        this.completionTime = options.completionTime > 0 ? options.completionTime : -1;
     }
 
     get numRunning() {
@@ -46,11 +282,15 @@ class SparkJob {
     id: number;
     status: string;
     stages: Array<SparkStage>;
+    submissionTime: number;
+    completionTime: number;
 
     constructor(options: any) {
         this.id = options.jobId;
         this.status = options.status;
         this.stages = [];
+        this.submissionTime = options.submissionTime > 0 ? options.submissionTime : -1;
+        this.completionTime = options.completionTime > 0 ? options.completionTime : -1;
     }
 
     get numTasks() {
@@ -70,7 +310,7 @@ class SparkJob {
         const skipped = this.stages.length - total;
         const completed = lodash.sum(this.stages.map(stage => stage.status === "COMPLETED" ? 1 : 0));
         let summary = `${completed}/${total}`;
-        if (skipped>0) {
+        if (skipped > 0) {
             summary = summary + ` (${skipped} skipped)`
         }
         return summary
@@ -121,8 +361,12 @@ class SparkApplication {
                 this.jobs.push(job);
                 break;
             }
-            case "sparkStageSubmitted":
+            case "sparkStageSubmitted": {
+                const {stageId, submissionTime} = options;
+                const stage = this.stagesMap.get(stageId);
+                stage.submissionTime = submissionTime;
                 break;
+            }
             case "sparkTaskStart": {
                 const {taskId, status, stageId} = options;
                 const task = {id: taskId, status};
@@ -139,15 +383,17 @@ class SparkApplication {
                 break;
             }
             case "sparkStageCompleted": {
-                const {stageId, status} = options;
+                const {stageId, status, completionTime} = options;
                 const stage = this.stagesMap.get(stageId);
                 stage.status = status;
+                stage.completionTime = completionTime;
                 break;
             }
             case "sparkJobEnd": {
-                const {jobId, status} = options;
+                const {jobId, status, completionTime} = options;
                 const job = this.jobs.find(item => item.id === jobId);
                 job.status = status;
+                job.completionTime = completionTime;
                 job.stages.forEach(stage => {
                     if (stage.status === "PENDING") {
                         stage.status = "SKIPPED"
@@ -209,6 +455,7 @@ export class SparkDashboardNotebook extends Notebook {
             this.application = new SparkApplication(message.application)
         }
         this.application.update(message);
+        console.log(message, this.application);
         this.signal.emit(this.application);
     }
 }
@@ -225,7 +472,6 @@ export class NotebookContentFactory extends NotebookPanel.ContentFactory {
     }
 }
 
-
 export class SparkDashboardWidget extends ReactWidget {
     constructor(notebook: SparkDashboardNotebook, options?: Widget.IOptions) {
         super(options);
@@ -240,52 +486,22 @@ export class SparkDashboardWidget extends ReactWidget {
                 return (
                     application ? <div className="spark-dashboard">
                         <div className="application">
-                            <span>application</span>
-                            <span>appId:</span><span>{application.appId}</span>
-                            <span>appName:</span><span>{application.appName}</span>
-                            <span>sparkUser:</span><span>{application.sparkUser}</span>
-                            <span>totalCores:</span><span>{application.totalCores}</span>
-                            <span>numCores:</span><span>{application.numCores}</span>
-                            <span>{application.numRunning}</span><span>RUNNING</span>
-                            <span>{application.numCompleted}</span><span>COMPLETED</span>
+                            <span className={'spark-dashboard-application-item'}>{application.appId}</span>
+                            <span className={'spark-dashboard-application-item'}>{application.appName}</span>
+                            <span className={'spark-dashboard-application-item'}>{application.sparkUser}</span>
+                            <span className={'spark-dashboard-application-item'}><SparkStatusBar status={'INFO'}
+                                                                                                 statusText={`${application.numCores} CORES`} /></span>
+                            {application.numRunning ?
+                                <span className={'spark-dashboard-application-item'}><SparkStatusBar status={'RUNNING'}
+                                                                                                     statusText={`${application.numRunning} RUNNING`} /></span> : null}
+                            {application.numCompleted ?
+                                <span className={'spark-dashboard-application-item'}><SparkStatusBar
+                                    status={'COMPLETED'}
+                                    statusText={`${application.numCompleted} COMPLETED`} /></span> : null}
                         </div>
-                        {
-                            application.jobs.map(job => {
-                                return (
-                                    <div className="jobs" key={job.id}>
-                                        <div className="job">
-                                            <span>job</span>
-                                            <span>jobId:</span><span>{job.id}</span>
-                                            <span>status:</span><span>{job.status}</span>
-                                            <span>stages:</span><span>{job.stageSummary}</span>
-                                            <span>tasks:</span>
-                                            <span>{job.numSuccess}</span>
-                                            <span>+ {job.numRunning}</span>
-                                            <span>/</span>
-                                            <span>{job.numTasks}</span>
-                                        </div>
-                                        {
-                                            job.stages.map(stage => {
-                                                return (
-                                                    <div className="stages" key={stage.id}>
-                                                        <div className="stage">
-                                                            <span>stage</span>
-                                                            <span>stageId:</span><span>{stage.id}</span>
-                                                            <span>name:</span><span>{stage.name.split(' ')[0]}</span>
-                                                            <span>status:</span><span>{stage.status}</span>
-                                                            <span>progress:</span>
-                                                            <span>{stage.numSuccess}</span>
-                                                            <span>+ {stage.numRunning}</span>
-                                                            <span>/</span><span>{stage.numTasks}</span>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            })
-                                        }
-                                    </div>
-                                )
-                            })
-                        }
+                        <div>
+                            <SparkJobTable items={application.jobs} />
+                        </div>
                     </div> : null
                 )
             }
