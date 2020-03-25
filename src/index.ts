@@ -1,6 +1,5 @@
 import {JupyterFrontEnd, JupyterFrontEndPlugin} from '@jupyterlab/application';
 import {MainAreaWidget} from '@jupyterlab/apputils';
-import { IDocumentManager } from '@jupyterlab/docmanager';
 import {NotebookPanel, INotebookTracker} from "@jupyterlab/notebook"
 import {SparkDashboardWidget, NotebookContentFactory, SparkDashboardNotebook} from "./widget";
 import {IEditorServices} from '@jupyterlab/codeeditor';
@@ -20,9 +19,9 @@ const notebookFactory: JupyterFrontEndPlugin<NotebookPanel.IContentFactory> = {
 
 const dashboardCommand: JupyterFrontEndPlugin<void> = {
     id: 'spark_dashboard',
-    requires: [ INotebookTracker, IDocumentManager],
+    requires: [INotebookTracker],
     autoStart: true,
-    activate: (app: JupyterFrontEnd, tracker: INotebookTracker, docManager: IDocumentManager) => {
+    activate: (app: JupyterFrontEnd, tracker: INotebookTracker) => {
 
         // Add an application command
         const command: string = 'spark_dashboard:open';

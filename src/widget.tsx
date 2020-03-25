@@ -12,6 +12,7 @@ import {each} from "@lumino/algorithm";
 import {Signal} from "@lumino/signaling";
 import {Message} from "@lumino/messaging";
 import {Widget} from "@lumino/widgets/lib/widget";
+import TimeAgo from 'timeago-react';
 
 moment.locale('zh-cn');
 
@@ -119,7 +120,7 @@ class SubmissionTime extends React.Component<PropsWithData<ISubmissionTime>, ISu
 
     render() {
         return (
-            <span>{this.state.submissionTime > 0 ? moment(this.state.submissionTime).fromNow() : '未知'}</span>
+            this.state.submissionTime > 0? <TimeAgo locale='zh_CN' datetime={new Date(this.state.submissionTime)}/>:<span>未知</span>
         )
     }
 }
@@ -206,13 +207,6 @@ class SparkStageTable extends React.Component<PSWithItems<SparkStage>, PSWithIte
     constructor(props: PSWithItems<SparkStage>) {
         super(props);
         this.state = {items: props.items};
-    }
-
-    statusData(stage: SparkStage) {
-        return {
-            text: stage.status,
-            status: stage.status
-        }
     }
 
     renderSparkStage(stage: SparkStage) {
@@ -351,7 +345,7 @@ class SparkApplication {
         switch (options.msgtype) {
             case "sparkJobStart": {
                 const job = new SparkJob(options);
-                each(Object.entries(options.stageInfos) as Array<[string, any]>, (stageObj, index) => {
+                each(Object.entries(options.stageInfos) as Array<[string, any]>, (stageObj) => {
                     const [stageId, stageInfo] = stageObj;
                     stageInfo.id = Number(stageId);
                     const stage = new SparkStage(stageInfo);
@@ -425,8 +419,8 @@ export class SparkDashboardNotebook extends Notebook {
     }
 
     handleKernelChanged(sessionContext: ISessionContext, status: Kernel.Status) {
-        const unavaliable_status = ['starting', 'restarting', 'unknown', 'autorestarting', 'dead'];
-        if (unavaliable_status.includes(status)) {
+        const unavailable_status = ['starting', 'restarting', 'unknown', 'autorestarting', 'dead'];
+        if (unavailable_status.includes(status)) {
             this.application = undefined;
             this.signal.emit(this.application);
         }

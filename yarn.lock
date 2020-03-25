@@ -1215,6 +1215,18 @@ supports-color@^6.1.0:
   dependencies:
     has-flag "^3.0.0"
 
+timeago-react@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npm.taobao.org/timeago-react/download/timeago-react-3.0.0.tgz#777665f768ae0517e71be137fc6287c4d0a6a788"
+  integrity sha1-d3Zl92iuBRfnG+E3/GKHxNCmp4g=
+  dependencies:
+    timeago.js "^4.0.0"
+
+timeago.js@^4.0.0:
+  version "4.0.2"
+  resolved "https://registry.npm.taobao.org/timeago.js/download/timeago.js-4.0.2.tgz#724e8c8833e3490676c7bb0a75f5daf20e558028"
+  integrity sha1-ck6MiDPjSQZ2x7sKdfXa8g5VgCg=
+
 tslib@~1.10.0:
   version "1.10.0"
   resolved "https://registry.npm.taobao.org/tslib/download/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
