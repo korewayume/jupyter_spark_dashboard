@@ -3,6 +3,10 @@
     padding: 20px 30px;
 }
 
+.spark-dashboard .spark-dashboard-placeholder {
+    text-align: center;
+}
+
 .spark-dashboard .application {
     height: 30px;
     line-height: 30px;

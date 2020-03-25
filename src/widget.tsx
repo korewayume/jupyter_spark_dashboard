@@ -41,6 +41,19 @@ interface ISparkTask {
     status: string;
 }
 
+interface ISubmissionTime {
+    submissionTime: number;
+}
+
+interface IDuration extends ISubmissionTime {
+    completionTime: number;
+}
+
+interface SparkJobItemState {
+    job: SparkJob,
+    isCollapse: boolean
+}
+
 class TaskProgressBar extends React.Component<PropsWithData<ITaskProgressBarData>, ITaskProgressBarData> {
     constructor(props: PropsWithData<ITaskProgressBarData>) {
         super(props);
@@ -72,90 +85,29 @@ class TaskProgressBar extends React.Component<PropsWithData<ITaskProgressBarData
     }
 }
 
-class SparkStatusBar extends React.Component<ISparkStatusBarData, ISparkStatusBarData> {
-    constructor(props: ISparkStatusBarData) {
-        super(props);
-        this.state = {
-            status: props.status,
-            statusText: props.statusText
-        };
-    }
+const SparkStatusBar: React.FunctionComponent<ISparkStatusBarData> = (props) => {
+    const getClassName = (status: string) => [status, 'spark-status-bar'].join(' ');
+    return <div className={getClassName(props.status)}>{props.statusText}</div>;
+};
 
-    componentWillReceiveProps(nextProps: ISparkStatusBarData) {
-        this.setState({
-            status: nextProps.status,
-            statusText: nextProps.statusText
-        })
-    }
+const SubmissionTime: React.FunctionComponent<ISubmissionTime> = (props) => {
+    return (
+        props.submissionTime > 0 ? <TimeAgo locale='zh_CN' datetime={new Date(props.submissionTime)} /> :
+            <span>未知</span>
+    )
+};
 
-    get className() {
-        return [this.state.status, 'spark-status-bar'].join(' ')
-    }
-
-    render() {
-        return (
-            <div className={this.className}>{this.state.statusText}</div>
-        )
-    }
-}
-
-interface ISubmissionTime {
-    submissionTime: number;
-}
-
-interface IDuration extends ISubmissionTime {
-    completionTime: number;
-}
-
-class SubmissionTime extends React.Component<PropsWithData<ISubmissionTime>, ISubmissionTime> {
-    constructor(props: PropsWithData<ISubmissionTime>) {
-        super(props);
-        this.state = props.data;
-    }
-
-    componentWillReceiveProps(nextProps: PropsWithData<ISubmissionTime>) {
-        this.setState({
-            submissionTime: nextProps.data.submissionTime
-        })
-    }
-
-    render() {
-        return (
-            this.state.submissionTime > 0 ? <TimeAgo locale='zh_CN' datetime={new Date(this.state.submissionTime)} /> :
-                <span>未知</span>
-        )
-    }
-}
-
-class Duration extends React.Component<PropsWithData<IDuration>, IDuration> {
-    constructor(props: PropsWithData<IDuration>) {
-        super(props);
-        this.state = props.data;
-    }
-
-    componentWillReceiveProps(nextProps: PropsWithData<IDuration>) {
-        this.setState({
-            submissionTime: nextProps.data.submissionTime,
-            completionTime: nextProps.data.completionTime
-        })
-    }
-
-    render() {
-        return (
-            <span>
-                {
-                    this.state.completionTime - this.state.submissionTime > 0 ?
-                        (moment.duration(this.state.completionTime - this.state.submissionTime) as any).format("d[d] h[h]:mm[m]:ss[s]") : '未知'
-                }
-            </span>
-        )
-    }
-}
-
-interface SparkJobItemState {
-    job: SparkJob,
-    isCollapse: boolean
-}
+const Duration: React.FunctionComponent<IDuration> = (props) => {
+    return (
+        <span>
+            {
+                props.completionTime - props.submissionTime > 0 ?
+                    (moment.duration(props.completionTime - props.submissionTime) as any)
+                        .format("d[d] h[h]:mm[m]:ss[s]") : '未知'
+            }
+        </span>
+    )
+};
 
 class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItemState> {
     constructor(props: PropsWithData<SparkJob>) {
@@ -187,8 +139,9 @@ class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItem
                 <td><SparkStatusBar status={this.state.job.status} statusText={this.state.job.status} /></td>
                 <td>{this.state.job.stageSummary}</td>
                 <td><TaskProgressBar data={this.state.job} /></td>
-                <td><SubmissionTime data={this.state.job} /></td>
-                <td><Duration data={this.state.job} /></td>
+                <td><SubmissionTime submissionTime={this.state.job.submissionTime} /></td>
+                <td><Duration submissionTime={this.state.job.submissionTime}
+                              completionTime={this.state.job.completionTime} /></td>
             </tr>,
             this.state.isCollapse ? null : <tr key={`job-${this.state.job.id}-stages`}>
                 <td className={'stage-collapse-offset'} />
@@ -221,7 +174,7 @@ class SparkJobTable extends React.Component<PSWithItems<SparkJob>, PSWithItems<S
                 </tr>
                 </thead>
                 <tbody>
-                {lodash.map(this.state.items, job => <SparkJobItem key={`job-${job.id}`} data={job}/>)}
+                {lodash.map(this.state.items, job => <SparkJobItem key={`job-${job.id}`} data={job} />)}
                 </tbody>
             </table>
         )
@@ -241,8 +194,8 @@ class SparkStageTable extends React.Component<PSWithItems<SparkStage>, PSWithIte
                 <td><span>{stage.name.split(' ')[0]}</span></td>
                 <td><SparkStatusBar status={stage.status} statusText={stage.status} /></td>
                 <td><TaskProgressBar data={stage} /></td>
-                <td><SubmissionTime data={stage} /></td>
-                <td><Duration data={stage} /></td>
+                <td><SubmissionTime submissionTime={stage.submissionTime} /></td>
+                <td><Duration submissionTime={stage.submissionTime} completionTime={stage.completionTime} /></td>
             </tr>
         )
     }
@@ -474,7 +427,6 @@ export class SparkDashboardNotebook extends Notebook {
             this.application = new SparkApplication(message.application)
         }
         this.application.update(message);
-        console.log(message, this.application);
         this.signal.emit(this.application);
     }
 }
@@ -521,7 +473,9 @@ export class SparkDashboardWidget extends ReactWidget {
                         <div>
                             <SparkJobTable items={application.jobs} />
                         </div>
-                    </div> : null
+                    </div> : <div className="spark-dashboard"><div className="spark-dashboard-placeholder">
+                        正在获取数据...
+                    </div></div>
                 )
             }
         }</UseSignal>
