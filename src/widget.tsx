@@ -12,6 +12,7 @@ import {each} from "@lumino/algorithm";
 import {Signal} from "@lumino/signaling";
 import {Message} from "@lumino/messaging";
 import {Widget} from "@lumino/widgets/lib/widget";
+import {LabIcon} from "@jupyterlab/ui-components";
 import TimeAgo from 'timeago-react';
 
 moment.locale('zh-cn');
@@ -168,10 +169,20 @@ class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItem
         })
     }
 
+    get collapseButtonClassName() {
+        return this.state.isCollapse ? 'collapse collapse-button is-collapse' : 'collapse collapse-button';
+    }
+
     render() {
         return [
             <tr key={`job-${this.state.job.id}`}>
-                <td className={'collapse'} onClick={this.toggleCollapse.bind(this)} />
+                <td className={this.collapseButtonClassName} onClick={this.toggleCollapse.bind(this)}>
+                    <LabIcon.resolveReact
+                        icon={"ui-components:run"}
+                        className="collapse-button-icon"
+                        tag="span"
+                    />
+                </td>
                 <td>{this.state.job.id}</td>
                 <td><SparkStatusBar status={this.state.job.status} statusText={this.state.job.status} /></td>
                 <td>{this.state.job.stageSummary}</td>
@@ -210,7 +221,7 @@ class SparkJobTable extends React.Component<PSWithItems<SparkJob>, PSWithItems<S
                 </tr>
                 </thead>
                 <tbody>
-                {lodash.map(this.state.items, job => <SparkJobItem data={job}/>)}
+                {lodash.map(this.state.items, job => <SparkJobItem key={`job-${job.id}`} data={job}/>)}
                 </tbody>
             </table>
         )

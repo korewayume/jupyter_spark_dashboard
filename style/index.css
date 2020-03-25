@@ -124,6 +124,22 @@
     width: 10px;
 }
 
+.spark-dashboard table .collapse-button {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.spark-dashboard table .collapse-button-icon svg {
+    transition: transform .4s;
+    transform: rotate(90deg);
+}
+
+.spark-dashboard table .is-collapse .collapse-button-icon svg {
+    transition: transform .4s;
+    transform: rotate(0deg);
+}
+
 .spark-dashboard table .collapse-offset {
     background-color: #E7E7E7;
 }
