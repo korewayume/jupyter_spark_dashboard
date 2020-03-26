@@ -2,6 +2,8 @@
 
 A JupyterLab PySpark extension.
 
+![](./docs/demo.gif)
+
 
 ## Requirements
 
