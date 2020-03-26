@@ -1,20 +1,20 @@
 import * as React from 'react';
 import lodash from 'lodash';
-import moment from 'moment'
-import 'moment-duration-format'
-import {ISessionContext, ReactWidget, UseSignal} from "@jupyterlab/apputils"
-import {NotebookPanel, Notebook} from "@jupyterlab/notebook";
-import {Cell} from "@jupyterlab/cells";
-import {Kernel, KernelMessage} from "@jupyterlab/services";
-import {IComm} from "@jupyterlab/services/lib/kernel/kernel";
-import {JSONObject} from "@lumino/coreutils";
-import {each} from "@lumino/algorithm";
-import {Signal} from "@lumino/signaling";
-import {Message} from "@lumino/messaging";
-import {Widget} from "@lumino/widgets/lib/widget";
-import {LabIcon} from "@jupyterlab/ui-components";
+import moment from 'moment';
 import TimeAgo from 'timeago-react';
-import {ElementAttrs, VirtualElement, VirtualNode} from "@lumino/virtualdom";
+import {Cell} from '@jupyterlab/cells';
+import {each} from '@lumino/algorithm';
+import {ElementAttrs, VirtualElement, VirtualNode} from '@lumino/virtualdom';
+import {IComm} from '@jupyterlab/services/lib/kernel/kernel';
+import {ISessionContext, ReactWidget, UseSignal} from '@jupyterlab/apputils';
+import {JSONObject} from '@lumino/coreutils';
+import {Kernel, KernelMessage} from '@jupyterlab/services';
+import {LabIcon} from '@jupyterlab/ui-components';
+import {Message} from '@lumino/messaging';
+import {Notebook, NotebookPanel} from '@jupyterlab/notebook';
+import {Signal} from '@lumino/signaling';
+import {Widget} from '@lumino/widgets/lib/widget';
+import 'moment-duration-format';
 
 moment.locale('zh-cn');
 
@@ -162,7 +162,8 @@ class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItem
                     />
                 </td>
                 <td>{this.state.job.id}</td>
-                <td><SparkStatusBar status={this.state.job.preferredStatus} statusText={this.state.job.preferredStatus} /></td>
+                <td><SparkStatusBar status={this.state.job.preferredStatus}
+                                    statusText={this.state.job.preferredStatus} /></td>
                 <td>{this.state.job.stageSummary}</td>
                 <td><TaskProgressBar data={this.state.job} /></td>
                 <td><SubmissionTime submissionTime={this.state.job.submissionTime} /></td>
@@ -498,19 +499,23 @@ export class SparkDashboardWidget extends ReactWidget {
                             </span>
                             {application.numRunning ?
                                 <span className={'spark-dashboard-application-item'}>
-                                    <SparkStatusBar status={'RUNNING'} statusText={`${application.numRunning} RUNNING`} />
+                                    <SparkStatusBar status={'RUNNING'}
+                                                    statusText={`${application.numRunning} RUNNING`} />
                                 </span> : null}
                             {application.numCompleted ?
                                 <span className={'spark-dashboard-application-item'}>
-                                    <SparkStatusBar status={'COMPLETED'} statusText={`${application.numCompleted} COMPLETED`} />
+                                    <SparkStatusBar status={'COMPLETED'}
+                                                    statusText={`${application.numCompleted} COMPLETED`} />
                                 </span> : null}
                         </div>
                         <div>
                             <SparkJobTable items={application.jobs} />
                         </div>
-                    </div> : <div className="spark-dashboard"><div className="spark-dashboard-placeholder">
-                        正在获取数据...
-                    </div></div>
+                    </div> : <div className="spark-dashboard">
+                        <div className="spark-dashboard-placeholder">
+                            正在获取数据...
+                        </div>
+                    </div>
                 )
             }
         }</UseSignal>

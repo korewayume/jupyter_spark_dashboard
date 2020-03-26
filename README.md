@@ -1,18 +1,16 @@
-# spark_dashboard
+# jupyter_spark_dashboard
 
-![Github Actions Status](https://github.com/my_name/myextension/workflows/Build/badge.svg)
-
-A JupyterLab extension.
+A JupyterLab PySpark extension.
 
 
 ## Requirements
 
-* JupyterLab >= 1.0
+* JupyterLab >= 2.0
 
 ## Install
 
 ```bash
-jupyter labextension install spark_dashboard
+jupyter labextension install jupyter_spark_dashboard
 ```
 
 ## Contributing
@@ -25,7 +23,7 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Move to spark_dashboard directory
+# Move to jupyter_spark_dashboard directory
 # Install dependencies
 jlpm
 # Build Typescript source
@@ -36,6 +34,10 @@ jupyter labextension link .
 jlpm build
 # Rebuild JupyterLab after making any changes
 jupyter lab build
+# Install kernel extension
+pip install .
+# Enable kernel extension
+ipython profile create && echo "c.InteractiveShellApp.extensions.append('jupyter_spark_monitor.kernel_extension')" >>  $(ipython profile locate default)/ipython_kernel_config.py
 ```
 
 You can watch the source directory and run JupyterLab in watch mode to watch for changes in the extension's source and automatically rebuild the extension and application.
@@ -50,6 +52,12 @@ jupyter lab --watch
 ### Uninstall
 
 ```bash
-jupyter labextension uninstall spark_dashboard
+jupyter labextension uninstall jupyter_spark_dashboard
+pip uninstall jupyter_spark_monitor
+# Edit ipython kernel config
+# $(ipython profile locate default)/ipython_kernel_config.py
 ```
+
+# Acknowledgements
+scala_listener copied from [krishnan-r/sparkmonitor](https://github.com/krishnan-r/sparkmonitor)
 
