@@ -136,7 +136,7 @@ class SparkJobItem extends React.Component<PropsWithData<SparkJob>, SparkJobItem
                     />
                 </td>
                 <td>{this.state.job.id}</td>
-                <td><SparkStatusBar status={this.state.job.status} statusText={this.state.job.status} /></td>
+                <td><SparkStatusBar status={this.state.job.preferredStatus} statusText={this.state.job.preferredStatus} /></td>
                 <td>{this.state.job.stageSummary}</td>
                 <td><TaskProgressBar data={this.state.job} /></td>
                 <td><SubmissionTime submissionTime={this.state.job.submissionTime} /></td>
@@ -192,7 +192,7 @@ class SparkStageTable extends React.Component<PSWithItems<SparkStage>, PSWithIte
             <tr key={`stage-${stage.id}`}>
                 <td><span>{stage.id}</span></td>
                 <td><span>{stage.name.split(' ')[0]}</span></td>
-                <td><SparkStatusBar status={stage.status} statusText={stage.status} /></td>
+                <td><SparkStatusBar status={stage.preferredStatus} statusText={stage.preferredStatus} /></td>
                 <td><TaskProgressBar data={stage} /></td>
                 <td><SubmissionTime submissionTime={stage.submissionTime} /></td>
                 <td><Duration submissionTime={stage.submissionTime} completionTime={stage.completionTime} /></td>
@@ -248,6 +248,10 @@ class SparkStage {
         return lodash.sum(this.tasks.map(task => task.status === 'SUCCESS' ? 1 : 0))
     }
 
+    get preferredStatus() {
+        return this.status === 'FAILED' && (this.tasks.map(task => task.status).includes('KILLED')) ? 'KILLED' : this.status;
+
+    }
 }
 
 class SparkJob {
@@ -288,6 +292,9 @@ class SparkJob {
         return summary
     }
 
+    get preferredStatus() {
+        return this.status === 'FAILED' && (this.stages.map(stage => stage.preferredStatus).includes('KILLED')) ? 'KILLED' : this.status;
+    }
 }
 
 class SparkApplication {
@@ -460,15 +467,17 @@ export class SparkDashboardWidget extends ReactWidget {
                             <span className={'spark-dashboard-application-item'}>{application.appId}</span>
                             <span className={'spark-dashboard-application-item'}>{application.appName}</span>
                             <span className={'spark-dashboard-application-item'}>{application.sparkUser}</span>
-                            <span className={'spark-dashboard-application-item'}><SparkStatusBar status={'INFO'}
-                                                                                                 statusText={`${application.numCores} CORES`} /></span>
+                            <span className={'spark-dashboard-application-item'}>
+                                <SparkStatusBar status={'INFO'} statusText={`${application.numCores} CORES`} />
+                            </span>
                             {application.numRunning ?
-                                <span className={'spark-dashboard-application-item'}><SparkStatusBar status={'RUNNING'}
-                                                                                                     statusText={`${application.numRunning} RUNNING`} /></span> : null}
+                                <span className={'spark-dashboard-application-item'}>
+                                    <SparkStatusBar status={'RUNNING'} statusText={`${application.numRunning} RUNNING`} />
+                                </span> : null}
                             {application.numCompleted ?
-                                <span className={'spark-dashboard-application-item'}><SparkStatusBar
-                                    status={'COMPLETED'}
-                                    statusText={`${application.numCompleted} COMPLETED`} /></span> : null}
+                                <span className={'spark-dashboard-application-item'}>
+                                    <SparkStatusBar status={'COMPLETED'} statusText={`${application.numCompleted} COMPLETED`} />
+                                </span> : null}
                         </div>
                         <div>
                             <SparkJobTable items={application.jobs} />

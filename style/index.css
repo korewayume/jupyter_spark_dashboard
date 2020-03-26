@@ -71,7 +71,7 @@
 }
 
 .spark-status-bar.INFO {
-    background-color:rgba(117, 57, 0, 0.65);
+    background-color: rgba(117, 57, 0, 0.65);
 }
 
 .spark-status-bar.RUNNING {
@@ -90,7 +90,7 @@
     background-color: #9c27b0;
 }
 
-.spark-status-bar.SKIPPED {
+.spark-status-bar.SKIPPED, .spark-status-bar.KILLED {
     background-color: #616161;
 }
 
@@ -116,12 +116,16 @@
     padding: 0 !important;
 }
 
+.spark-dashboard table td {
+    padding: 2px 5px;
+}
+
 .spark-dashboard table .width-10 {
-    width: 10%;
+    width: 100px;
 }
 
 .spark-dashboard table .width-15 {
-    width: 15%;
+    width: 140px;
 }
 
 .spark-dashboard table .collapse {
