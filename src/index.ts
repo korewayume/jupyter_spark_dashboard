@@ -1,11 +1,10 @@
 import {JupyterFrontEnd, JupyterFrontEndPlugin} from '@jupyterlab/application';
 import {MainAreaWidget} from '@jupyterlab/apputils';
 import {NotebookPanel, INotebookTracker, INotebookModel} from "@jupyterlab/notebook";
-import {SparkDashboardWidget, NotebookContentFactory, SparkDashboardNotebook} from "./widget";
+import {SparkDashboardWidget, NotebookContentFactory, SparkDashboardNotebook, SparkIcon} from "./widget";
 import {IEditorServices} from '@jupyterlab/codeeditor';
 import {IMainMenu} from '@jupyterlab/mainmenu';
 import {ToolbarButton} from '@jupyterlab/apputils';
-import {stopIcon} from '@jupyterlab/ui-components';
 
 import {
     IDisposable, DisposableDelegate
@@ -22,7 +21,6 @@ const notebookFactory: JupyterFrontEndPlugin<NotebookPanel.IContentFactory> = {
     requires: [IEditorServices],
     autoStart: true,
     activate: (app: JupyterFrontEnd, editorServices: IEditorServices) => {
-        console.log('app', app);
         let editorFactory = editorServices.factoryService.newInlineEditor;
         return new NotebookContentFactory({editorFactory});
     }
@@ -63,7 +61,7 @@ pysparkCancelAllJobs()
         };
         let button = new ToolbarButton({
             className: 'pyspark-cancel-all-jobs',
-            icon: stopIcon,
+            icon: {name: 'spark-stop-icon', svgstr:`<svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M512 0C229.233 0 0 229.233 0 512s229.233 512 512 512 512-229.233 512-512S794.767 0 512 0z m0 928.01C282.255 928.01 95.99 741.765 95.99 512S282.235 95.99 512 95.99 928.01 282.235 928.01 512 741.765 928.01 512 928.01zM320 320h384v384H320z" fill="#616161"></path></svg>`},
             onClick: pysparkCancelAllJobs,
             tooltip: 'Interrupt the kernel & Cancel All PySpark Jobs'
         });
@@ -97,6 +95,7 @@ const dashboardCommand: JupyterFrontEndPlugin<void> = {
                 widget.id = 'spark_dashboard';
                 widget.title.label = 'Spark Dashboard';
                 widget.title.closable = true;
+                widget.title.icon= new SparkIcon();
                 current.context.addSibling(widget, {
                     ref: current.id,
                     mode: 'split-bottom'
