@@ -949,6 +949,11 @@ minimist@^1.2.5, minimist@~1.2.0:
   resolved "https://registry.npm.taobao.org/minimist/download/minimist-1.2.5.tgz#67d66014b66a6a8aaa0c083c5fd58df4e4e97602"
   integrity sha1-Z9ZgFLZqaoqqDAg8X9WN9OTpdgI=
 
+moment-duration-format@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.npm.taobao.org/moment-duration-format/download/moment-duration-format-2.3.2.tgz#5fa2b19b941b8d277122ff3f87a12895ec0d6212"
+  integrity sha1-X6Kxm5QbjSdxIv8/h6EolewNYhI=
+
 moment@^2.24.0:
   version "2.24.0"
   resolved "https://registry.npm.taobao.org/moment/download/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"

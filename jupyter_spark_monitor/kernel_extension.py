@@ -4,6 +4,13 @@ import json
 import socket
 from threading import Thread
 from ipykernel.comm import Comm
+# import logging
+#
+# logger = logging.getLogger(__name__)
+# fh = logging.FileHandler("kernel_extension.log")
+# fh.setFormatter(logging.Formatter(fmt='[%(asctime)s %(name)s] %(levelname)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
+# logger.setLevel(logging.DEBUG)
+# logger.addHandler(fh)
 
 
 class SocketServer(Thread):
@@ -29,6 +36,8 @@ class SocketServer(Thread):
 
             while client:
                 message = client.recv(4096).decode()
+                if not message:
+                    break
                 buffered_message = buffered_message + message
                 last_sep_pos = buffered_message.rfind(self.SEP)
                 if last_sep_pos > 0:

@@ -407,6 +407,9 @@ class SparkApplication {
                 });
                 break;
             }
+            case "sparkApplicationEnd": {
+                throw new Error('sparkApplicationEnd');
+            }
         }
     }
 }
@@ -460,8 +463,17 @@ export class SparkDashboardNotebook extends Notebook {
         if (!this.application) {
             this.application = new SparkApplication(message.application)
         }
-        this.application.update(message);
-        this.signal.emit(this.application);
+        try {
+            this.application.update(message);
+        } catch (e) {
+            if (e.message === 'sparkApplicationEnd') {
+                this.application = undefined;
+            } else {
+                throw e;
+            }
+        } finally {
+            this.signal.emit(this.application);
+        }
     }
 }
 
