@@ -1,5 +1,7 @@
 # jupyter_spark_dashboard
 
+![Github Actions Status](https://github.com/korewayume/jupyter_spark_dashboard/workflows/Build/badge.svg)
+
 A JupyterLab PySpark extension.
 
 ![](./docs/demo.gif)
