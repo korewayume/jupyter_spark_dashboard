@@ -1,11 +1,10 @@
 import {DisposableDelegate, IDisposable} from '@lumino/disposable';
 import {DocumentRegistry} from '@jupyterlab/docregistry';
 import {IEditorServices} from '@jupyterlab/codeeditor';
-import {IMainMenu} from '@jupyterlab/mainmenu';
 import {INotebookModel, INotebookTracker, NotebookPanel} from '@jupyterlab/notebook';
 import {JupyterFrontEnd, JupyterFrontEndPlugin} from '@jupyterlab/application';
 import {Kernel} from '@jupyterlab/services/lib/kernel';
-import {MainAreaWidget} from '@jupyterlab/apputils';
+import {MainAreaWidget, ISessionContext} from '@jupyterlab/apputils';
 import {
     NotebookContentFactory,
     SparkDashboardNotebook,
@@ -25,6 +24,11 @@ const notebookFactory: JupyterFrontEndPlugin<NotebookPanel.IContentFactory> = {
         return new NotebookContentFactory({editorFactory});
     }
 };
+
+function isPythonKernel(sessionContext: ISessionContext) {
+    if (!sessionContext.session) return false;
+    return sessionContext.specsManager.specs.kernelspecs[sessionContext.session.kernel.name].language.toUpperCase() === 'PYTHON'
+}
 
 class ButtonExtension implements DocumentRegistry.IWidgetExtension<NotebookPanel, INotebookModel> {
     createNew(panel: NotebookPanel, context: DocumentRegistry.IContext<INotebookModel>): IDisposable {
@@ -69,6 +73,13 @@ pysparkCancelAllJobs()
             onClick: pysparkCancelAllJobs,
             tooltip: 'Interrupt the kernel & Cancel All PySpark Jobs'
         });
+        button.hide();
+
+        function toggleVisible(sessionContext: ISessionContext) {
+            isPythonKernel(sessionContext) ? button.show() : button.hide();
+        }
+
+        context.sessionContext.kernelChanged.connect(toggleVisible);
 
         panel.toolbar.insertItem(9, 'Interrupt the kernel & Cancel All PySpark Jobs', button);
         return new DisposableDelegate(() => {
@@ -79,19 +90,20 @@ pysparkCancelAllJobs()
 
 const dashboardCommand: JupyterFrontEndPlugin<void> = {
     id: 'jupyter_spark_dashboard',
-    requires: [INotebookTracker, IMainMenu],
+    requires: [INotebookTracker],
     autoStart: true,
-    activate: (app: JupyterFrontEnd, tracker: INotebookTracker, mainMenu: IMainMenu) => {
+    activate: (app: JupyterFrontEnd, tracker: INotebookTracker) => {
         const openCommand: string = 'jupyter_spark_dashboard:open';
+
+        function getCurrent(): NotebookPanel | null {
+            const widget = tracker.currentWidget;
+            app.shell.activateById(widget.id);
+            return widget;
+        }
+
         app.commands.addCommand(openCommand, {
             label: 'Open Spark Dashboard',
             execute: () => {
-                function getCurrent(): NotebookPanel | null {
-                    const widget = tracker.currentWidget;
-                    app.shell.activateById(widget.id);
-                    return widget;
-                }
-
                 const current = getCurrent();
                 const content = new SparkDashboardWidget(current.content as SparkDashboardNotebook);
                 content.addClass('jupyter_spark_dashboard');
@@ -104,6 +116,10 @@ const dashboardCommand: JupyterFrontEndPlugin<void> = {
                     ref: current.id,
                     mode: 'split-bottom'
                 });
+            },
+            isEnabled: () => {
+                const sessionContext = getCurrent().sessionContext;
+                return isPythonKernel(sessionContext);
             }
         });
         app.contextMenu.addItem({
