@@ -12,6 +12,7 @@ import {
     SparkIcon
 } from './widget';
 import {ToolbarButton} from '@jupyterlab/apputils';
+import {shareFile} from './share-file';
 
 
 const notebookFactory: JupyterFrontEndPlugin<NotebookPanel.IContentFactory> = {
@@ -131,7 +132,7 @@ const dashboardCommand: JupyterFrontEndPlugin<void> = {
 };
 
 const extensions: JupyterFrontEndPlugin<any>[] = [
-    notebookFactory, dashboardCommand
+    notebookFactory, dashboardCommand, shareFile
 ];
 
 export default extensions;
